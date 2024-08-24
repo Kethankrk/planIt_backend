@@ -1,0 +1,130 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sql
+*.sqlite3
+db.sqlite3
+
+# Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# Media files
+media
+
+# Static files
+staticfiles
+static/
+
+# Django tests and cache
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# VS Code
+.vscode/
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Environments
+*.env
+*.env.*
+.envrc
+
+# Editor files
+*.sublime-project
+*.sublime-workspace
+.idea/
+*.swp
+*.swo
+
+# Pycharm
+.idea/
+*.iml
+
+# Spyder project settings
+.spyderproject
+.spyderworkspace
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# macOS
+.DS_Store
+*.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+*.stackdump
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows image file caches
+*.jfif
+*.jpe
+*.jpeg
+*.jpg
+*.png
+*.svg
+*.tiff
+*.wbmp
+*.webp
+
+# Linux image file caches
+*.bmp
+*.gif
+*.ico
+*.icns
+*.cur
+*.dds
+*.pcx
+*.tga
+*.psd
+*.xcf
+
+# dotenv
+.env
+
+# pytest
+.pytest_cache/
