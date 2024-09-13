@@ -125,6 +125,7 @@ Temporary Items
 
 # dotenv
 .env
+!sample.env
 
 # pytest
 .pytest_cache/
