@@ -11,7 +11,7 @@ class SignUpAPI(APIView):
         if not serializer.is_valid():
             return CustomResponse(error=serializer.errors).failure()
         serializer.save()
-        return Response("success")
+        return CustomResponse(message="Successfully registered").success()
 
 
 class LoginAPI(APIView):
