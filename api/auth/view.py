@@ -1,14 +1,15 @@
 from rest_framework.views import APIView, Response
 from .serializer import UserSerializer, LoginSerializer
 from api.models import User
-from utils.auth_utils import JWT_utils, CustomPermission
+from utils.auth_utils import JWT_utils
+from utils.response import CustomResponse
 
 
 class SignUpAPI(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=400)
+            return CustomResponse(error=serializer.errors).failure()
         serializer.save()
         return Response("success")
 
@@ -26,14 +27,10 @@ class LoginAPI(APIView):
         user = User.object.filter(email=email).first()
 
         if user is None:
-            return Response("User not found", status=404)
+            return CustomResponse(message="User not found").failure()
 
-        if not user.has_usable_password():
-            token = JWT_utils.generate_token({"id": user.id})
-            return Response({"token": token})
-
-        if not user.check_password(password):
-            return Response("Bad cridentails", status=401)
+        if not user.check_password(password) and user.has_usable_password():
+            return CustomResponse(message="Bad cridentails").failure()
 
         token = JWT_utils.generate_token({"id": user.id})
-        return Response({"access_token": token})
+        return CustomResponse(response={"token": token}).success()
