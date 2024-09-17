@@ -32,5 +32,9 @@ class LoginAPI(APIView):
         if not user.check_password(password) and user.has_usable_password():
             return CustomResponse(message="Bad cridentails").failure()
 
+        if not user.is_verified:
+            return CustomResponse(message="User email is not verified").failure(
+                status=403
+            )
         token = JWT_utils.generate_token({"id": user.id})
         return CustomResponse(response={"token": token}).success()
