@@ -3,12 +3,13 @@ from typing import Tuple
 from decouple import config
 from rest_framework.authentication import get_authorization_header
 from rest_framework.permissions import BasePermission
-from .exceptions import UnautherizedError
+from .exceptions import UnautherizedError, UserNotVerifiedError
 
 
 class CustomPermission(BasePermission):
     def authenticate(self, request):
-        JWT_utils.is_jwt_authenticated(request=request)
+        payload = JWT_utils.is_jwt_authenticated(request=request)
+        JWT_utils.is_user_verified(payload=payload)
 
 
 class JWT_utils:
@@ -29,16 +30,23 @@ class JWT_utils:
         return payload["id"]
 
     @staticmethod
-    def is_jwt_authenticated(request) -> bool:
+    def is_jwt_authenticated(request) -> dict:
         try:
             token = get_authorization_header(request).decode("utf-8")
             if not token or not token.startswith("Bearer"):
                 raise UnautherizedError("Invalid token header")
             token = token.split()[1]
             payload = JWT_utils.decode_token(token)
+            return payload
         except IndexError as e:
             raise UnautherizedError("Empty token found")
         except jwt.exceptions.InvalidSignatureError as e:
             raise UnautherizedError("Invalid token")
         except Exception as e:
             raise UnautherizedError(str(e))
+
+    @staticmethod
+    def is_user_verified(payload: dict) -> bool:
+        is_verified = payload.get("is_verified")
+        if not is_verified:
+            raise UserNotVerifiedError()
