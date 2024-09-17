@@ -24,6 +24,7 @@ class User(AbstractUser):
     first_name = None
     last_name = None
     email = models.EmailField(unique=True)
+    is_verified = models.BooleanField(default=False)
     password = models.CharField(max_length=128, blank=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "password"]
