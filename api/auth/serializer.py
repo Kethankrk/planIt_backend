@@ -5,7 +5,6 @@ from api.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        # fields = ["username", "email", "password"]
         fields = "__all__"
 
     def create(self, validated_data):
@@ -15,3 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(required=False)
+
+
+class EmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.IntegerField()
