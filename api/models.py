@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.postgres.fields import ArrayField
 
 
 class UserManager(BaseUserManager):
@@ -31,3 +32,16 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name", "password"]
     object = UserManager()
+
+
+class Event(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    hero_image = models.URLField()
+    attendees_req = ArrayField(models.CharField(max_length=255))
+    location = models.CharField(max_length=255)
+    organizer_id = models.ForeignKey(
+        User, related_name="organized_event", on_delete=models.SET_NULL, null=True
+    )
