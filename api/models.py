@@ -45,3 +45,6 @@ class Event(models.Model):
     organizer_id = models.ForeignKey(
         User, related_name="organized_event", on_delete=models.SET_NULL, null=True
     )
+
+    def __str__(self):
+        return self.title
