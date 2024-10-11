@@ -19,3 +19,9 @@ class LoginSerializer(serializers.Serializer):
 class EmailVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
     code = serializers.IntegerField()
+
+
+class GoogleUserInfoSerailzier(serializers.Serializer):
+    name = serializers.CharField(max_length=255)
+    profile = serializers.URLField(source="picture")
+    email = serializers.EmailField()
