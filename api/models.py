@@ -48,3 +48,46 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class EventForm(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    event_id = models.ForeignKey(Event, related_name="forms", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class FormField(models.Model):
+    label = models.CharField(max_length=125)
+    field_type = models.CharField(max_length=25)
+    is_required = models.BooleanField(default=False)
+    order_no = models.SmallIntegerField()
+    form_id = models.ForeignKey(
+        EventForm, related_name="fields", on_delete=models.CASCADE
+    )
+
+    def __str__(self) -> str:
+        return self.label
+
+
+class FieldOptions(models.Model):
+    option = models.CharField(max_length=125)
+    field_id = models.ForeignKey(
+        FormField, related_name="options", on_delete=models.CASCADE
+    )
+
+    def __str__(self) -> str:
+        return self.option
+
+
+class FormResponse(models.Model):
+    value = models.CharField(max_length=255)
+    form_field = models.ForeignKey(
+        FormField, related_name="values", on_delete=models.CASCADE
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.form_field.label
