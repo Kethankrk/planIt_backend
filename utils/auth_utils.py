@@ -2,13 +2,19 @@ import jwt
 from typing import Tuple
 from decouple import config
 from rest_framework.authentication import get_authorization_header
-from rest_framework.permissions import BasePermission
+from rest_framework.authentication import BaseAuthentication
 from .exceptions import UnautherizedError, UserNotVerifiedError
+from api.models import User
 
 
-class CustomPermission(BasePermission):
+class CustomAuthClass(BaseAuthentication):
     def authenticate(self, request):
-        JWT_utils.is_jwt_authenticated(request=request)
+        payload = JWT_utils.is_jwt_authenticated(request=request)
+        pk = payload.get("id")
+        user = User.object.filter(id=pk).first()
+        if user is None:
+            raise UnautherizedError("Unathenticated user")
+        return (user, None)
 
 
 class JWT_utils:
@@ -35,7 +41,7 @@ class JWT_utils:
             if not token or not token.startswith("Bearer"):
                 raise UnautherizedError("Invalid token header")
             token = token.split()[1]
-            payload = JWT_utils.decode_token(token)
+            return JWT_utils.decode_token(token)
         except IndexError as e:
             raise UnautherizedError("Empty token found")
         except jwt.exceptions.InvalidSignatureError as e:
