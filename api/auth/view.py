@@ -1,5 +1,10 @@
 from rest_framework.views import APIView, Response
-from .serializer import UserSerializer, LoginSerializer, EmailVerificationSerializer
+from .serializer import (
+    UserSerializer,
+    LoginSerializer,
+    EmailVerificationSerializer,
+    GoogleUserInfoSerailzier,
+)
 from api.models import User
 from utils.auth_utils import JWT_utils
 from utils.response import CustomResponse
@@ -8,6 +13,7 @@ from random import randint
 from django.core.cache import cache
 from django.core.mail import send_mail
 from decouple import config
+import requests
 
 
 class SignUpAPI(APIView):
@@ -34,7 +40,7 @@ class LoginAPI(APIView):
         if user is None:
             return CustomResponse(message="User not found").failure()
 
-        if not user.check_password(password) and user.has_usable_password():
+        if not user.check_password(password):
             return CustomResponse(message="Bad cridentails").failure()
 
         if not user.is_verified:
@@ -43,6 +49,43 @@ class LoginAPI(APIView):
             )
         token = JWT_utils.generate_token({"id": user.id})
         return CustomResponse(response={"token": token}).success()
+
+
+class GoogleAuthAPI(APIView):
+    def post(self, request: Request):
+        token = request.data.get("token")
+        if token is None:
+            return CustomResponse(message="Token not provided").failure()
+        print(token)
+        try:
+            res = requests.get(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+            if res.status_code == 200:
+                serializer = GoogleUserInfoSerailzier(res.json())
+
+                email = serializer.data.get("email")
+                user = User.object.filter(email=email).first()
+                if not user is None:
+                    jwt_token = JWT_utils.generate_token({"id": user.id})
+                    return CustomResponse(response={"token": jwt_token}).success()
+
+                user_serializer = UserSerializer(
+                    data={**serializer.data, "is_verified": True}
+                )
+                if not user_serializer.is_valid():
+                    print(user_serializer.errors)
+                    return CustomResponse(error=user_serializer.errors).failure(
+                        status=500
+                    )
+                user = user_serializer.save()
+                jwt_token = JWT_utils.generate_token({"id": user.id})
+                return CustomResponse(response={"token": jwt_token}).success()
+            raise ValueError()
+        except ValueError:
+            return CustomResponse(message="Invalid token").failure()
 
 
 class EmailVerificationAPI(APIView):
