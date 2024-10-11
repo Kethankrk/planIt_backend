@@ -4,15 +4,15 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, email, username, password=None, **extra_fields):
+    def create_user(self, email, name, password=None, **extra_fields):
         email = self.normalize_email(email)
-        user = self.model(email=email, username=username, **extra_fields)
+        user = self.model(email=email, name=name, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, password, username):
-        user = self.create_user(email=email, password=password, username=username)
+    def create_superuser(self, email, password, name):
+        user = self.create_user(email=email, password=password, name=name)
         user.is_staff = True
         user.is_superuser = True
         user.save()
@@ -23,9 +23,11 @@ class User(AbstractUser):
     profile = models.URLField(blank=True, null=True)
     first_name = None
     last_name = None
+    username = None
+    name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     is_verified = models.BooleanField(default=False)
     password = models.CharField(max_length=128, blank=True)
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "password"]
+    REQUIRED_FIELDS = ["name", "password"]
     object = UserManager()
