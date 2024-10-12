@@ -17,11 +17,20 @@ class FieldOptionsSerializer(serializers.ModelSerializer):
 
 
 class FormFieldSerializer(serializers.ModelSerializer):
-    options = FieldOptionsSerializer(required=False, many=True)
+    # options = FieldOptionsSerializer(required=False, many=True)
+    options = serializers.ListSerializer(
+        child=serializers.CharField(), required=False, source="options__option"
+    )
 
     class Meta:
         model = FormField
         fields = ["label", "type", "is_required", "order_no", "options"]
+
+    def to_representation(self, instance: FormField):
+        options = [option.option for option in instance.options.all()]
+        representation = super().to_representation(instance)
+        representation["options"] = options
+        return representation
 
 
 class EventFormSerializer(serializers.ModelSerializer):
@@ -43,6 +52,6 @@ class EventFormSerializer(serializers.ModelSerializer):
                 form_field = FormField.objects.create(form_id=event_form, **field)
 
                 for option in options_data:
-                    FieldOptions.objects.create(field_id=form_field, **option)
+                    FieldOptions.objects.create(field_id=form_field, option=option)
 
         return event_form
