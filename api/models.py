@@ -53,7 +53,9 @@ class Event(models.Model):
 class EventForm(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    event_id = models.ForeignKey(Event, related_name="forms", on_delete=models.CASCADE)
+    event_id = models.OneToOneField(
+        Event, related_name="forms", on_delete=models.CASCADE
+    )
 
     def __str__(self) -> str:
         return self.title
@@ -61,7 +63,7 @@ class EventForm(models.Model):
 
 class FormField(models.Model):
     label = models.CharField(max_length=125)
-    field_type = models.CharField(max_length=25)
+    type = models.CharField(max_length=25)
     is_required = models.BooleanField(default=False)
     order_no = models.SmallIntegerField()
     form_id = models.ForeignKey(
