@@ -2,10 +2,11 @@ from utils.response import CustomResponse
 from utils.auth_utils import CustomAuthClass, JWT_utils
 from rest_framework.views import APIView
 from rest_framework.request import Request
-from .serializer import EventSerializer, EventFormSerializer
+from .serializer import EventSerializer, EventFormSerializer, FormResponseSerializer
 from django.shortcuts import get_object_or_404
-from api.models import Event, EventForm
+from api.models import Event, FormField, EventForm
 from django.http import Http404
+from django.db.models import Count, Q
 
 
 class EventCreateGetListAPI(APIView):
@@ -60,3 +61,14 @@ class EventFormCreateGetAPI(APIView):
 
         serializer = EventFormSerializer(event.forms)
         return CustomResponse(response=serializer.data).success()
+
+
+class EventFormSubmitAPI(APIView):
+
+    def post(self, request: Request):
+        serializer = FormResponseSerializer(data=request.data, many=True)
+        if not serializer.is_valid():
+            return CustomResponse(error=serializer.errors).failure()
+
+        serializer.save()
+        return CustomResponse(message="Success").success()
