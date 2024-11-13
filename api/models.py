@@ -93,3 +93,13 @@ class FormResponse(models.Model):
 
     def __str__(self) -> str:
         return self.form_field.label
+
+
+class Ticket(models.Model):
+    title = models.CharField(max_length=25)
+    price = models.FloatField(null=True, blank=True)
+    limit = models.IntegerField(null=True, blank=True)
+    perks = ArrayField(models.CharField(max_length=255))
+    event_id = models.ForeignKey(
+        Event, related_name="tickets", on_delete=models.CASCADE
+    )
