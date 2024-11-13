@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import Event, EventForm, FormField, FieldOptions
+from api.models import Event, EventForm, FormField, FieldOptions, FormResponse
 from django.db import transaction
 
 
@@ -17,14 +17,14 @@ class FieldOptionsSerializer(serializers.ModelSerializer):
 
 
 class FormFieldSerializer(serializers.ModelSerializer):
-    # options = FieldOptionsSerializer(required=False, many=True)
     options = serializers.ListSerializer(
         child=serializers.CharField(), required=False, source="options__option"
     )
 
     class Meta:
         model = FormField
-        fields = ["label", "type", "is_required", "order_no", "options"]
+        fields = "__all__"
+        read_only_fields = ["form_id"]
 
     def to_representation(self, instance: FormField):
         options = [option.option for option in instance.options.all()]
@@ -55,3 +55,10 @@ class EventFormSerializer(serializers.ModelSerializer):
                     FieldOptions.objects.create(field_id=form_field, option=option)
 
         return event_form
+
+
+class FormResponseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FormResponse
+        fields = "__all__"
