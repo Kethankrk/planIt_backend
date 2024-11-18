@@ -39,7 +39,7 @@ class Event(models.Model):
     description = models.TextField()
     start = models.DateTimeField()
     end = models.DateTimeField()
-    hero_image = models.URLField()
+    hero_image = models.URLField(max_length=500)
     attendees_req = ArrayField(models.CharField(max_length=255))
     location = models.CharField(max_length=255)
     organizer_id = models.ForeignKey(
