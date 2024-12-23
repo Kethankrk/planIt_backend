@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: project-db
+    image: postgres
+    hostname: localhost
+    ports:
+      - "2345:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: planit
+    volumes:
+      - planit-db:/var/lib/postgresql/data
+    restart: unless-stopped
+  redis:
+    container_name: project-redis
+    image: redis
+    ports:
+      - "6379:6379"
+volumes:
+  planit-db:

@@ -11,6 +11,12 @@ class UserSerializer(serializers.ModelSerializer):
         return User.object.create_user(**validated_data)
 
 
+class SignUpSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+    name = serializers.CharField()
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(required=False)
